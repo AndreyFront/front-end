@@ -12,7 +12,6 @@ export default createStore({
   actions: {
   },
   modules: {
-    auth,
-    feed
+    auth
   }
 })
