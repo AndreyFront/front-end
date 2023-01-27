@@ -1,9 +1,11 @@
 <template>
     <div class="auth-page">
-        <h1>Sign in</h1>
-        <input type="text" placeholder="Email"> <br/> <br/>
-        <input type="password" placeholder="Password"> <br/> <br/>
-        <button>Sign in</button>
+        <div class="main-container max-width">
+            <h1>Sign in</h1>
+            <input type="text" placeholder="Email"> <br/> <br/>
+            <input type="password" placeholder="Password"> <br/> <br/>
+            <button>Sign in</button>
+        </div>
     </div>
 </template>
 

@@ -1,17 +1,20 @@
 <template>
-    <header>
-        <nav>
-            <ul>
-                <li>
-                    <router-link :to="{name: 'signIn'}">Sign in</router-link>
-                </li>
-                <li>
-                    <router-link :to="{name: 'signUp'}">Sign up</router-link>
-                </li>
-            </ul>
-        </nav>
-    </header>
+    <Header></Header>
     <router-view />
 </template>
 
-<style lang="scss"></style>
+<script>
+    import Header from '@/layouts/Header'
+    import axios from '@/api/postsApi';
+
+    export default {
+        name: "App",
+        components: {
+            Header
+        }
+    }
+</script>
+
+<style lang="scss">
+    @import '@/assets/styles/main.scss';
+</style>

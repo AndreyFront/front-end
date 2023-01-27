@@ -1,11 +1,9 @@
-
-
 const state = {
 
 }
 
 export const mutationTypes = {
-
+    
 }
 
 export const actionsTypes = {
