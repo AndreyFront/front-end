@@ -1,0 +1,12 @@
+.auth {
+
+    &__wrap-input {
+        display: grid;
+        grid-row-gap: 20px;
+        max-width: 300px;
+    }
+
+    &__btn {
+        margin-top: 20px;
+    }
+}

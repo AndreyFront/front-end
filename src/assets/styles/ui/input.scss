@@ -1,0 +1,21 @@
+.input {
+    padding: 0 24px;
+    height: 40px;
+    border: 1px solid;
+    border-color: #c0c0c0;
+    outline: none;
+    background-color: #fff;
+    transition: border-color 0.3s;
+
+    &::placeholder {
+        color: #c0c0c0;
+    }
+
+    &:focus {
+        border-color: #000;
+    }
+
+    &--error {
+        border-color: red;
+    }
+}

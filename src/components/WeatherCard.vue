@@ -3,8 +3,8 @@
         <span class="name-place">{{ place }}</span>
         <div class="wrap-info">
             <span class="info">Погода: {{ weather }}</span>
-            <span class="info">Температура: {{ temp }}<sup>0</sup></span>
-            <span class="info">Влажность: {{ humidity }}</span>
+            <span class="info">Температура: {{ temp }} <sup>o</sup></span>
+            <span class="info">Влажность: {{ humidity }} %</span>
         </div>
     </div>
 </template>
@@ -32,22 +32,22 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-    .weather-card {
-        border: 1px solid #c0c0c0;
-        padding: 20px;
-    }
+.weather-card {
+    border: 1px solid #c0c0c0;
+    padding: 20px;
+}
 
-    .name-place {
-        font-size: 18px;
-        font-size: 600;
-    }
+.name-place {
+    font-size: 18px;
+    font-size: 600;
+}
 
-    .wrap-info {
-        display: grid;
-        grid-row-gap: 5px;
-        align-content: start;
-        margin-top: 15px;
-    }
+.wrap-info {
+    display: grid;
+    grid-row-gap: 5px;
+    align-content: start;
+    margin-top: 15px;
+}
 
-    .info {}
+.info {}
 </style>

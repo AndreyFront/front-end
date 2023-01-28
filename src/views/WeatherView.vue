@@ -10,17 +10,20 @@
                     </button>
                 </form>
             </div>
-            <div v-if="weatherData.length > 0" class="wrap-cards">
-                <WeatherCard 
-                    v-for="weather in weatherData"
-                    :key="weather.id" 
-                    :place="weather.place" 
+            <div v-if="weatherData.length > 0 && isPlaces" class="wrap-cards">
+                <WeatherCard v-for="weather in weatherData" :key="weather.id" :place="weather.place"
                     :weather="weather.weather === undefined ? 'Not weather' : weather.weather"
                     :temp="weather.temp === undefined ? 'Not temperature' : weather.temp"
-                    :humidity="weather.humidity === undefined ? 'Not humidity' : weather.humidity"
-                />
+                    :humidity="weather.humidity === undefined ? 'Not humidity' : weather.humidity" />
             </div>
-            <span v-else class="message">Нет карточек погоды</span>
+            <div v-else-if="Object.keys(searchData).length" class="wrap-cards">
+                <WeatherCard :place="searchData.place"
+                    :weather="searchData.weather === undefined ? 'Not weather' : searchData.weather"
+                    :temp="searchData.temp === undefined ? 'Not temperature' : searchData.temp"
+                    :humidity="searchData.humidity === undefined ? 'Not humidity' : searchData.humidity" />
+            </div>
+            <span v-else-if="isWeatherLoading" class="message">Идет загрузка погоды)</span>
+            <span v-else-if="isNotPosts" class="message">Нет карточек погоды</span>
         </div>
     </div>
 </template>
@@ -28,9 +31,11 @@
 <script>
 import WeatherCard from '@/components/WeatherCard'
 import { getCoordinates, weatherApi } from '@/api/weatherApi'
+import fahrenheitInCelsius from '@/mixins/fahrenheitInCelsius'
 
 export default {
     name: 'WeatherView',
+    mixins: [fahrenheitInCelsius],
     components: {
         WeatherCard
     },
@@ -38,114 +43,133 @@ export default {
         return {
             searchInput: '',
             weatherData: [],
+            searchData: {},
+            isPlaces: false,
+            isWeatherLoading: true,
+            isNotPosts: false,
             places: [
-                {id: 0, place: 'Краснодар '},
-                {id: 1, place: 'Москва'},
-                {id: 2, place: 'Питер'}
+                { id: 0, place: 'Краснодар ' },
+                { id: 1, place: 'Москва' },
+                { id: 2, place: 'Питер' }
             ],
         }
     },
-    methods: {
+    computed: {
         getInfoPlaces() {
-            if (this.places.length > 0) {
-                this.places.forEach((place, index) => {
-                    this.getWeather(place, index)
-                })
-            }
+            setTimeout(() => {
+                if (this.places.length > 0) {
+                    this.isPlaces = true
+                    this.isNotPosts = false
+                    this.places.forEach((place, index) => {
+                        this.getWeather(place, index).then((resp) => {
+                            this.isWeatherLoading = false
+                            this.weatherData.push(resp)
+                        })
+                    })
+                } else {
+                    this.isPlaces = false
+                    this.isWeatherLoading = false
+                    this.isNotPosts = true
+                }
+            }, 1500)
         },
-        getWeather(place, index) {
-            getCoordinates(place, index).then((resp) => {
-                const dataPlace = resp.data.features[0],
-                    lat = dataPlace.center[0],
-                    lon = dataPlace.center[1]
-                weatherApi({lat, lon}).then((resp) => {
-                    const dataWeather = resp.data.current
-                    const objectData = {
-                        id: index,
-                        place: place.place,
-                        weather: dataWeather.weather[0].description,
-                        temp: dataWeather.temp,
-                        humidity: dataWeather.humidity
-                    }
+    },
+    methods: {
+        async getWeather(place, index) {
+            const respCoordinates = await getCoordinates(place, index)
+            const dataPlace = respCoordinates.data.features[0],
+                lat = dataPlace.center[0],
+                lon = dataPlace.center[1]
+            const respWeather = await weatherApi({ lat, lon })
+            const dataWeather = respWeather.data.current
+            const objectData = {
+                id: index,
+                place: place.place,
+                weather: dataWeather.weather[0].description,
+                temp: Math.round(this.getCelsius(dataWeather.temp)),
+                humidity: dataWeather.humidity
+            }
 
-                    this.weatherData.push(objectData)
-                })
-            })
+            return objectData
         },
         search() {
+            this.isWeatherLoading = true
             if (this.searchInput.length > 0) {
-                this.weatherData = []
-                this.getWeather({place: this.searchInput}, 0)
+                this.isPlaces = false
+                setTimeout(() => {
+                    this.getWeather({ place: this.searchInput }, 0).then((resp) => {
+                        this.isWeatherLoading = false
+                        this.searchData = resp
+                    })
+                }, 1500)
             } else {
-                this.getInfoPlaces()
+                this.isWeatherLoading = false
+                this.isPlaces = true
+                this.searchData = {}
+                this.getInfoPlaces
             }
         }
     },
     mounted() {
-        this.getInfoPlaces()
+        this.getInfoPlaces
     }
 }
 </script>
 
 <style lang="scss" scoped>
-    .weather {}
+.weather {}
 
-    .wrap-title {
-        display: grid;
-        grid-template-columns: auto max-content;
-        align-items: center;
-        justify-content: space-between;
-    }
+.wrap-title {
+    display: grid;
+    grid-template-columns: auto max-content;
+    align-items: center;
+    justify-content: space-between;
+}
 
-    .wrap-cards {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-row-gap: 20px;
-        grid-column-gap: 20px;
-        margin-top: 50px;
-    }
+.wrap-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-row-gap: 20px;
+    grid-column-gap: 20px;
+    margin-top: 50px;
+}
 
-    .message {
-        font-size: 24px;
-        font-weight: 600;
-    }
+.block-search {
+    display: grid;
+    grid-template-columns: auto max-content;
+    align-items: center;
+    height: 30px;
+    border: 1px solid #c0c0c0;
+}
 
-    .block-search {
-        display: grid;
-        grid-template-columns: auto max-content;
-        align-items: center;
-        height: 30px;
-        border: 1px solid #c0c0c0;
-    }
+.search {
+    align-self: stretch;
+    width: 100%;
+    border: none;
+    outline: none;
+    padding: 0 10px;
+    background-color: transparent;
+}
 
-    .search {
-        align-self: stretch;
-        width: 100%;
-        border: none;
-        outline: none;
-        padding: 0 10px;
-        background-color: transparent;
-    }
-    
-    .search-btn {
-        display: grid;
-        align-items: center;
-        justify-content: center;
-        align-self: stretch;
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-        transition: opacity 0.3s;
+.search-btn {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.3s;
 
-        &:hover {
-            opacity: 0.6;
-        }
+    &:hover {
+        opacity: 0.6;
     }
+}
 
-    .search-icon {
-        width: 20px;
-        height: 20px;
-        object-fit: contain;
-        object-position: center;
-    }
+.search-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    object-position: center;
+}
 </style>

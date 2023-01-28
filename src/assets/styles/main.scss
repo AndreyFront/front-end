@@ -42,3 +42,17 @@ h1 {
     font-size: 40px;
     font-weight: 600;
 }
+
+.message {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+// UI
+
+@import './ui/btn.scss';
+@import './ui/input.scss';
+
+// Components
+
+@import './components/auth';
