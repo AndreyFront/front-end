@@ -6,51 +6,52 @@ const state = {
     isLoading: false,
     errors: [],
     user: {
+        username: '',
         email: '',
         password: '',
     }
 }
 
 const getters = {
-    signInGetEmail(state) {
+    signUpGetEmail(state) {
         return state.email
     },
-    signInGetPassword(state) {
+    signUpGetPassword(state) {
         return state.password
     },
-    signInGetIsLogin(state) {
+    signUpGetIsLogin(state) {
         return state.isLogin
     },
-    signInGetErrors(state) {
+    signUpGetErrors(state) {
         return state.errors
     }
 }
 
 const mutations = {
-    signInSetEmail(state, payload) {
+    signUpSetEmail(state, payload) {
         state.email = payload
     },
-    signInSetPassword(state, payload) {
+    signUpSetPassword(state, payload) {
         state.password = payload
     },
-    signInSetIsLogin(state, payload) {
+    signUpSetIsLogin(state, payload) {
         state.isLogin = payload
     },
-    signInSetIsLoading(state, payload) {
+    signUpSetIsLoading(state, payload) {
         state.isLoading = payload
     }
 }
 
 const actions = {
     async signIn(context, payload) {
-        context.commit('signInSetIsLoading', true)
+        context.commit('signUpSetIsLoading', true)
         const data = await realworldApi.login(payload)
             .then((resp) => {
                 setItem('accessToken', resp.data.user.token)
-                context.commit('signInSetIsLogin', true)
+                context.commit('signUpSetIsLogin', true)
             })
             .catch((error) => this.errors = error.response.data.errors)
-            .finally(() => context.commit('signInSetIsLoading', false))
+            .finally(() => context.commit('signUpSetIsLoading', false))
     }
 }
 

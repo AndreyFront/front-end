@@ -3,11 +3,11 @@
         <div class="main-container max-width">
             <h1>Вход</h1>
             <div class="auth__wrap-input">
-                <ErrorsAuth :errors="errors" />
+                <ErrorsAuth :errors="signInGetErrors" />
                 <input type="text" class="input" placeholder="Email" v-model="user.email" />
                 <input type="password" class="input" placeholder="Пароль" v-model="user.password" />
             </div>
-            <button type="button" class="btn auth__btn" @click="signIn">
+            <button type="button" class="btn auth__btn" @click="signInAction">
                 <span class="btn__text">Войти</span>
             </button>
         </div>
@@ -16,9 +16,7 @@
 
 <script>
 import ErrorsAuth from '@/components/ErrorsAuth'
-import realworldApi from '@/api/realworldApi'
-import { setItem } from '@/helpers/interactionLocalStorage'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
     name: "SignIn",
@@ -34,12 +32,13 @@ export default {
     components: {
         ErrorsAuth
     },
+    computed: {
+        ...mapGetters(['signInGetErrors'])
+    },
     methods: {
-        async signIn() {
-            this.isLoading = true
-            const data = await realworldApi.login(this.user)
-                .then((resp) => setItem('accessToken', resp.data.user.token))
-                .catch((error) => this.errors = error.response.data.errors)
+        ...mapActions(['signIn']),
+        signInAction() {
+            this.signIn(this.user)
         }
     }
 };
