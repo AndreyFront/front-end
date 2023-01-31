@@ -38,7 +38,7 @@ export default {
     methods: {
         ...mapActions(['signIn']),
         signInAction() {
-            this.signIn(this.user)
+            this.signIn(this.user).then((res) => this.$router.push({ name: 'posts' }))
         }
     }
 };

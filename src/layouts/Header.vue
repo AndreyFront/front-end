@@ -6,18 +6,21 @@
                     <li class="li">
                         <router-link :to="{ name: 'home' }" class="link link-reset">Главная</router-link>
                     </li>
-                    <li class="li">
+                    <li class="li" v-if="!signInGetIsLogin && !signUpGetIsLogin">
                         <router-link :to="{ name: 'signIn' }" class="link link-reset">Вход</router-link>
                     </li>
-                    <li class="li">
+                    <li class="li" v-if="!signInGetIsLogin && !signUpGetIsLogin">
                         <router-link :to="{ name: 'signUp' }" class="link link-reset">Регистрация</router-link>
                     </li>
-                    <li class="li">
+                    <li class="li" v-if="isLogin">
                         <router-link :to="{ name: 'posts' }" class="link link-reset">Посты</router-link>
                     </li>
-                    <li class="li">
-                        <router-link :to="{ name: 'weather' }" class="link link-reset">Погода</router-link>
+                    <li class="li" v-if="isLogin">
+                        <router-link :to="{ name: 'signUp' }" class="link link-reset">Вход</router-link>
                     </li>
+                    <!-- <li class="li">
+                        <router-link :to="{ name: 'weather' }" class="link link-reset">Погода</router-link>
+                    </li> -->
                 </ul>
             </nav>
         </div>
@@ -25,10 +28,18 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 
 export default {
-    name: 'Header'
+    name: 'Header',
+    data() {
+        return {
+            isLogin: this.signInGetIsLogin || this.signUpGetIsLogin
+        }
+    },
+    computed: {
+        ...mapGetters(['signInGetIsLogin', 'signUpGetIsLogin'])
+    }
 }
 </script>
 

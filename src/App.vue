@@ -4,17 +4,16 @@
 </template>
 
 <script>
-    import Header from '@/layouts/Header'
-    import axios from '@/api/postsApi';
+import Header from '@/layouts/Header'
 
-    export default {
-        name: "App",
-        components: {
-            Header
-        }
+export default {
+    name: "App",
+    components: {
+        Header
     }
+}
 </script>
 
 <style lang="scss">
-    @import '@/assets/styles/main.scss';
+@import '@/assets/styles/main.scss';
 </style>

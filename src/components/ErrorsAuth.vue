@@ -12,7 +12,7 @@ export default {
     name: 'ErrorsAuth',
     props: {
         errors: {
-            type: Array,
+            type: Object,
         }
     }
 }

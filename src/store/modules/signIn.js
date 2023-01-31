@@ -38,19 +38,29 @@ const mutations = {
     },
     signInSetIsLoading(state, payload) {
         state.isLoading = payload
+    },
+    signInSetErrors(state, payload) {
+        state.errors = payload
     }
 }
 
 const actions = {
-    async signIn(context, payload) {
+    signIn(context, payload) {
         context.commit('signInSetIsLoading', true)
-        const data = await realworldApi.login(payload)
-            .then((resp) => {
-                setItem('accessToken', resp.data.user.token)
-                context.commit('signInSetIsLogin', true)
-            })
-            .catch((error) => this.errors = error.response.data.errors)
-            .finally(() => context.commit('signInSetIsLoading', false))
+        return new Promise((resolve, reject) => {
+            const data = realworldApi.login(payload)
+                .then((resp) => {
+                    setItem('accessToken', resp.data.user.token)
+                    context.commit('signInSetIsLogin', true)
+                    context.commit('signInSetErrors', [])
+                    resolve(resp)
+                })
+                .catch((errors) => {
+                    context.commit('signInSetErrors', errors.response.data.errors)
+                    reject(errors)
+                })
+                .finally(() => context.commit('signInSetIsLoading', false))
+        })
     }
 }
 
